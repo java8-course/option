@@ -83,7 +83,20 @@ public class OptionalExample {
 
     @Test
     public void orElseThrow() {
-        // TODO ?
+        final Optional<String> o = getOptional();
+
+        try {
+            System.out.println(o.orElseThrow(() -> new RuntimeException("orElseThrow")));
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        try {
+            if (o.isPresent()) System.out.println(o.get());
+            else throw new RuntimeException("orElseThrow");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
 
