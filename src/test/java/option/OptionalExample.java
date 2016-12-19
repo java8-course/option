@@ -32,6 +32,24 @@ public class OptionalExample {
         }
     }
 
+    @Test
+    public void map() {
+        final Optional<String> o1 = getOptional();
+
+        final Function<String, Integer> getLength = String::length;
+
+        final Optional<Integer> expected = o1.map(getLength);
+
+        final Optional<Integer> actual;
+        if (o1.isPresent()) {
+            actual = Optional.of(getLength.apply(o1.get()));
+        } else {
+            actual = Optional.empty();
+        }
+
+        assertEquals(expected, actual);
+    }
+
     private Optional<String> getOptional() {
         return ThreadLocalRandom.current().nextBoolean()
             ? Optional.empty()
