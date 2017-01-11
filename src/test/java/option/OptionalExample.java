@@ -5,6 +5,7 @@ import org.junit.Test;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import static org.junit.Assert.assertEquals;
 
@@ -45,6 +46,60 @@ public class OptionalExample {
             actual = Optional.of(getLength.apply(o1.get()));
         } else {
             actual = Optional.empty();
+        }
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void flatMap() {
+        final Optional<String> o1 = getOptional();
+
+        final Function<String, Optional<Integer>> getLength = (str) -> Optional.ofNullable(str.length());
+
+        final Optional<Integer> expected = o1.flatMap(getLength);
+
+        final Optional<Integer> actual;
+        if (o1.isPresent()) {
+            actual = getLength.apply(o1.get());
+        } else {
+            actual = Optional.empty();
+        }
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void filter() {
+        final Optional<String> o1 = getOptional();
+
+        final Predicate<String> isLengthGreaterThan2 = (str) -> str.length() > 2;
+
+        final Optional<String> expected = o1.filter(isLengthGreaterThan2);
+
+        final Optional<String> actual;
+        if (o1.isPresent() && isLengthGreaterThan2.test(o1.get())) {
+            actual = o1;
+        } else {
+            actual = Optional.empty();
+        }
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void orElse() {
+        final Optional<String> o1 = getOptional();
+
+        final String elseValue = "or else value";
+
+        final String expected = o1.orElse(elseValue);
+
+        final String actual;
+        if (o1.isPresent()) {
+            actual = o1.get();
+        } else {
+            actual = elseValue;
         }
 
         assertEquals(expected, actual);
