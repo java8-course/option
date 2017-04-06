@@ -5,6 +5,7 @@ import org.junit.Test;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import static org.junit.Assert.assertEquals;
 
@@ -54,5 +55,58 @@ public class OptionalExample {
         return ThreadLocalRandom.current().nextBoolean()
             ? Optional.empty()
             : Optional.of("abc");
+    }
+
+    @Test
+    public void filter(){
+
+        final Optional<String> o1 = getOptional();
+
+        final Predicate<String> lenIs3 = string -> string.length() == 3;
+
+        final Optional<String> expected = o1.filter(lenIs3);
+
+        final Optional<String> actual;
+
+        if(o1.isPresent() && lenIs3.test(o1.get()))
+            actual = Optional.of(o1.get());
+        else
+            actual = Optional.empty();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void flatMap(){
+
+        final Optional<String> o1 = getOptional();
+
+        final Function<String, Optional<String>> func = Optional::of;
+
+        final Optional<String> expected = o1.flatMap(func);
+
+        final Optional<String> actual;
+
+        if(o1.isPresent())
+            actual = func.apply(o1.get());
+        else actual = Optional.empty();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void orElse(){
+
+        final Optional<String> o1 = getOptional();
+
+        final String expected = o1.orElse("orElse");
+
+        final String actual;
+
+        if(o1.isPresent())
+            actual = o1.get();
+        else actual = "orElse";
+
+        assertEquals(expected, actual);
     }
 }
