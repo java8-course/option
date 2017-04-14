@@ -1,13 +1,13 @@
 package option;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 import java.util.function.Predicate;
-
-import static org.junit.Assert.assertEquals;
 
 public class OptionalExample {
 
@@ -19,7 +19,7 @@ public class OptionalExample {
 
         o1.orElse("t");
         o1.orElseGet(() -> "t");
-        o1.orElseThrow(() -> new UnsupportedOperationException());
+//        o1.orElseThrow(() -> new UnsupportedOperationException());
     }
 
     @Test
