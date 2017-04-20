@@ -5,6 +5,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -83,8 +84,22 @@ public class OptionalExample {
             actual = Optional.empty();
         }
         assertEquals(expected, actual);
+    }
+
+    @Test
+    public void orElse() {
+        final Optional<String> o1 = Optional.empty();
 
 
+        String expected = "haha";
+        String actual;
+
+        if (o1.isPresent())
+            actual = o1.get();
+        else
+            actual = "haha";
+
+        assertEquals(actual, expected);
     }
 
     private Optional<String> getOptional() {
