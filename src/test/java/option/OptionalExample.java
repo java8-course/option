@@ -13,11 +13,6 @@ import static org.junit.Assert.assertEquals;
 
 public class OptionalExample {
 
-    //length is min of two collections
-    //R only when T1 and T2 exists
-    //without isPresent && get
-    //without mutable var (only final vars)
-    //hint: 2 methods to use: only map and flatMap
     public static <T1, T2, R> Optional<R> zipMap(Optional<T1> o1, Optional<T2> o2, BiFunction<T1, T2, R> bf) {
         return o1.flatMap(t1 -> o2.map(t2 -> bf.apply(t1, t2)));
     }
@@ -66,15 +61,6 @@ public class OptionalExample {
 
         assertEquals(expected, actual);
     }
-
-    //ifPresent && get -> realise all methods from Optional
-    /*
-    1. option.filter();      +
-    2. option.flatMap();     +
-    3. option.orElse();      +
-    4. option.orElseGet();   +
-    5. option.orElseThrow(); +
-    */
 
     @Test
     public void filter() throws Exception {
