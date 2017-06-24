@@ -2,9 +2,12 @@ package option;
 
 import org.junit.Test;
 
+import java.io.FileNotFoundException;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import static org.junit.Assert.assertEquals;
 
@@ -50,9 +53,51 @@ public class OptionalExample {
         assertEquals(expected, actual);
     }
 
+    @Test
+    public void filter() {
+        Optional<String> optional = getOptional();
+        Predicate<String> predicate = String::isEmpty;
+        Optional<String> actual =
+                (optional.isPresent() && predicate.test(optional.get())) ? optional : Optional.empty();
+        Optional<String> expected = optional.filter(predicate);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void flatMap() {
+        Optional<String> optional = getOptional();
+        Function<String, Optional<String>> function = s -> Optional.of(s.toUpperCase());
+        Optional<String> actual = (optional.isPresent()) ? function.apply(optional.get()) : Optional.empty();
+        Optional<String> expected = optional.flatMap(function);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void orElse() {
+        Optional<String> optional = Optional.empty();
+        String other = null;
+        String actual = optional.isPresent() ? optional.get() : other;
+        String expected = optional.orElse(other);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void orElseGet() {
+        Optional<String> optional = Optional.empty();
+        String toReturn = null;
+        Supplier<String> stringSupplier = () -> toReturn;
+        String actual = optional.isPresent() ? optional.get() : stringSupplier.get();
+        String expected = optional.orElseGet(stringSupplier);
+
+        assertEquals(expected, actual);
+    }
+    
     private Optional<String> getOptional() {
         return ThreadLocalRandom.current().nextBoolean()
-            ? Optional.empty()
-            : Optional.of("abc");
+                ? Optional.empty()
+                : Optional.of("abc");
     }
 }
