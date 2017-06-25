@@ -94,7 +94,7 @@ public class OptionalExample {
 
         assertEquals(expected, actual);
     }
-    
+
     private Optional<String> getOptional() {
         return ThreadLocalRandom.current().nextBoolean()
                 ? Optional.empty()
