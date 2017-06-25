@@ -31,7 +31,7 @@ public class OptionalExample {
 
     @Test
     public void ifPresent() {
-        Optional<String> o1 = this.getOptional();
+        Optional<String> o1 = getOptional();
 
         o1.ifPresent(System.out::println);
 
@@ -42,7 +42,7 @@ public class OptionalExample {
 
     @Test
     public void map() {
-        Optional<String> o1 = this.getOptional();
+        Optional<String> o1 = getOptional();
 
         Function<String, Integer> getLength = String::length;
 
@@ -61,7 +61,7 @@ public class OptionalExample {
 
     @Test
     public void filter() {
-        Optional<String> opt = this.getOptional();
+        Optional<String> opt = getOptional();
 
         Predicate<String> test = s -> s.equals("fffff");
 
@@ -83,7 +83,7 @@ public class OptionalExample {
     @Test
     public void flatMap() {
 
-        Optional<String> opt = getOptional();
+        Optional<String> opt = this.getOptional();
 
         Function<String, Optional<Integer>> getLength = s -> Optional.of(s.length());
 
@@ -101,7 +101,7 @@ public class OptionalExample {
     @Test
     public void orElse() {
 
-        Optional<String> opt = getOptional();
+        Optional<String> opt = this.getOptional();
 
         String exp = "fffff";
 
@@ -119,7 +119,7 @@ public class OptionalExample {
 
     @Test
     public void orElseGet() {
-        Optional<String> opt = this.getOptional();
+        Optional<String> opt = getOptional();
 
         Supplier<String> supplier = () -> "ffff";
         String expected = opt.orElseGet(supplier);
@@ -135,7 +135,28 @@ public class OptionalExample {
         assertEquals(expected, actual);
     }
 
+    @Test
+    public void orElseThrow() {
 
+        Optional<String> opt = this.getOptional();
+        Supplier<Exception> exception = () -> new Exception("message");
+        Optional<String> actual;
+
+        try {
+            Optional<String> expected = Optional.of(opt.orElseThrow(exception));
+            if (opt.isPresent()) {
+                actual = Optional.of(opt.get());
+                assertEquals(expected, actual);
+            } else {
+                actual = Optional.empty();
+                assertEquals(expected, actual);
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            assertEquals("message", e.getMessage());
+        }
+
+    }
 
 
     private Optional<String> getOptional() {
