@@ -30,7 +30,7 @@ public class OptionalExample {
 
     @Test
     public void ifPresent() {
-        Optional<String> o1 = getOptional();
+        Optional<String> o1 = this.getOptional();
 
         o1.ifPresent(System.out::println);
 
@@ -41,7 +41,7 @@ public class OptionalExample {
 
     @Test
     public void map() {
-        Optional<String> o1 = getOptional();
+        Optional<String> o1 = this.getOptional();
 
         Function<String, Integer> getLength = String::length;
 
@@ -60,7 +60,7 @@ public class OptionalExample {
 
     @Test
     public void filter() {
-        Optional<String> opt = getOptional();
+        Optional<String> opt = this.getOptional();
 
         Predicate<String> test = s -> s.equals("fffff");
 
@@ -82,15 +82,15 @@ public class OptionalExample {
     @Test
     public void flatMap() {
 
-        Optional<String> o1 = this.getOptional();
+        Optional<String> opt = getOptional();
 
         Function<String, Optional<Integer>> getLength = s -> Optional.of(s.length());
 
-        Optional<Integer> expected = o1.flatMap(getLength);
+        Optional<Integer> expected = opt.flatMap(getLength);
 
         Optional<Integer> actual;
-        if (o1.isPresent()) {
-            actual = getLength.apply(o1.get());
+        if (opt.isPresent()) {
+            actual = getLength.apply(opt.get());
         } else {
             actual = Optional.empty();
         }
