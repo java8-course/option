@@ -8,6 +8,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import static org.junit.Assert.assertEquals;
 
@@ -30,7 +31,7 @@ public class OptionalExample {
 
     @Test
     public void ifPresent() {
-        Optional<String> o1 = getOptional();
+        Optional<String> o1 = this.getOptional();
 
         o1.ifPresent(System.out::println);
 
@@ -41,7 +42,7 @@ public class OptionalExample {
 
     @Test
     public void map() {
-        Optional<String> o1 = getOptional();
+        Optional<String> o1 = this.getOptional();
 
         Function<String, Integer> getLength = String::length;
 
@@ -60,7 +61,7 @@ public class OptionalExample {
 
     @Test
     public void filter() {
-        Optional<String> opt = getOptional();
+        Optional<String> opt = this.getOptional();
 
         Predicate<String> test = s -> s.equals("fffff");
 
@@ -82,7 +83,7 @@ public class OptionalExample {
     @Test
     public void flatMap() {
 
-        Optional<String> opt = this.getOptional();
+        Optional<String> opt = getOptional();
 
         Function<String, Optional<Integer>> getLength = s -> Optional.of(s.length());
 
@@ -100,7 +101,7 @@ public class OptionalExample {
     @Test
     public void orElse() {
 
-        Optional<String> opt = this.getOptional();
+        Optional<String> opt = getOptional();
 
         String exp = "fffff";
 
@@ -115,6 +116,26 @@ public class OptionalExample {
         }
         assertEquals(expected, actual);
     }
+
+    @Test
+    public void orElseGet() {
+        Optional<String> opt = this.getOptional();
+
+        Supplier<String> supplier = () -> "ffff";
+        String expected = opt.orElseGet(supplier);
+
+        String actual;
+
+        if (opt.isPresent()) {
+            actual = opt.get();
+        } else {
+            actual = supplier.get();
+        }
+
+        assertEquals(expected, actual);
+    }
+
+
 
 
     private Optional<String> getOptional() {
