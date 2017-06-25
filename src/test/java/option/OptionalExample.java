@@ -1,18 +1,25 @@
 package option;
 
+import com.google.common.base.Strings;
 import org.junit.Test;
 
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import static org.junit.Assert.assertEquals;
 
 public class OptionalExample {
 
+    public static <T1, T2, R> Optional<R> zipMap(Optional<T1> o1, Optional<T2> o2, BiFunction<T1, T2, R> f) {
+        throw new UnsupportedOperationException();
+    }
+
     @Test
     public void get() {
-        final Optional<String> o1 = Optional.empty();
+        Optional<String> o1 = Optional.empty();
 
         o1.ifPresent(s -> System.out.println(s));
 
@@ -23,7 +30,7 @@ public class OptionalExample {
 
     @Test
     public void ifPresent() {
-        final Optional<String> o1 = getOptional();
+        Optional<String> o1 = this.getOptional();
 
         o1.ifPresent(System.out::println);
 
@@ -34,13 +41,13 @@ public class OptionalExample {
 
     @Test
     public void map() {
-        final Optional<String> o1 = getOptional();
+        Optional<String> o1 = this.getOptional();
 
-        final Function<String, Integer> getLength = String::length;
+        Function<String, Integer> getLength = String::length;
 
-        final Optional<Integer> expected = o1.map(getLength);
+        Optional<Integer> expected = o1.map(getLength);
 
-        final Optional<Integer> actual;
+        Optional<Integer> actual;
         if (o1.isPresent()) {
             actual = Optional.of(getLength.apply(o1.get()));
         } else {
@@ -50,9 +57,32 @@ public class OptionalExample {
         assertEquals(expected, actual);
     }
 
+
+    @Test
+    public void filter() {
+        Optional<String> o1 = this.getOptional();
+
+        Predicate<String> isEmpty = s -> Strings.isNullOrEmpty(s);
+
+        Optional<String> expected = o1.filter(isEmpty);
+
+        Optional<String> actual;
+        if (o1.isPresent()) {
+            if (isEmpty.test(o1.get())) {
+                actual = Optional.empty();
+            } else {
+                actual = Optional.of(o1.get());
+            }
+        } else {
+            actual = Optional.empty();
+        }
+        assertEquals(expected, actual);
+    }
+
+
     private Optional<String> getOptional() {
         return ThreadLocalRandom.current().nextBoolean()
-            ? Optional.empty()
-            : Optional.of("abc");
+                ? Optional.empty()
+                : Optional.of("abc");
     }
 }
