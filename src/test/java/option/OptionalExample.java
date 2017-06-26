@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -162,5 +163,28 @@ public class OptionalExample {
                 ? Optional.empty()
                 : Optional.of("abc");
     }
+
+    public static <T1, T2, R> Optional<R> zipMap(Optional<T1> o1, Optional<T2> o2, BiFunction<T1, T2, R> f) {
+        return o1.flatMap(t1 -> o2.map(t2 -> f.apply(t1, t2)));
+    }
+
+    @Test
+    public void zipMapTest(){
+
+        Optional <String> str = Optional.of("abc");
+        Optional <Integer> number = Optional.of(123);
+        BiFunction<String, Integer, String> function = (s, i) -> s + i;
+
+        Optional<String> zipMap1 = zipMap(str, number, function);
+
+        Optional<String> result = Optional.of("");
+
+        if (zipMap1.isPresent()){
+            result = Optional.of(zipMap1.get());
+        }
+
+        assertEquals(result.get(), "abc123");
+    }
+
 }
 
