@@ -5,6 +5,7 @@ import org.junit.Test;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -12,6 +13,26 @@ import java.util.function.Supplier;
 import static org.junit.Assert.assertEquals;
 
 public class OptionalExample {
+
+    public static <T1, T2, R> Optional<R> zipMap(Optional<T1> t1, Optional<T2> t2, BiFunction<T1, T2, R> f) {
+        if (t1.isPresent() && t2.isPresent()){
+            return Optional.of(f.apply(t1.get(), t2.get()));
+        } else {
+            return Optional.empty();
+        }
+//        //no mutable
+//        //no is present and get
+//        //map and flatmap
+    }
+
+    @Test
+    public void zipMap() {
+        Optional<Integer> first = Optional.of(1);
+        Optional<String> second = Optional.of("a");
+
+        Optional<String> result = zipMap(first, second, (i, s) -> i + s);
+        assertEquals(result.get(), "1a");
+    }
 
     @Test
     public void get() {
