@@ -15,11 +15,7 @@ import static org.junit.Assert.assertEquals;
 public class OptionalExample {
 
     public static <T1, T2, R> Optional<R> zipMap(Optional<T1> t1, Optional<T2> t2, BiFunction<T1, T2, R> f) {
-        if (t1.isPresent() && t2.isPresent()){
-            return Optional.of(f.apply(t1.get(), t2.get()));
-        } else {
-            return Optional.empty();
-        }
+        return t1.flatMap(opt1 -> t2.map(opt2 -> f.apply(opt1, opt2)));
 //        //no mutable
 //        //no is present and get
 //        //map and flatmap
