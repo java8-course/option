@@ -4,6 +4,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 // https://github.com/java8-course/option
 public abstract class Option<T> {
@@ -54,6 +55,11 @@ public abstract class Option<T> {
         public T orElse(T t) {
             return t;
         }
+
+        @Override
+        public T orElseGet(Supplier<T> s) {
+            return s.get();
+        }
     }
 
     private static class Some<T> extends Option<T> {
@@ -93,6 +99,11 @@ public abstract class Option<T> {
         public T orElse(T t) {
             return value;
         }
+
+        @Override
+        public T orElseGet(Supplier<T> s) {
+            return value;
+        }
     }
 
 
@@ -108,6 +119,8 @@ public abstract class Option<T> {
     public abstract boolean isEmpty();
 //    orElse
     public abstract T orElse(T t);
+//    orElseGet
+    public abstract T orElseGet(Supplier<T> s);
 }
 
 
