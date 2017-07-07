@@ -2,8 +2,7 @@ package option;
 
 import org.junit.Test;
 
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -12,14 +11,37 @@ import static org.junit.Assert.assertEquals;
 
 public class OptionalExample {
 
-    public static <T1, T2, R> Optional<R> zipMap(Optional<T1> o1, Optional<T2> o2, BiFunction<T1, T2, R> f){
-        // isPresent, get none
-        //use map + flatMap
-        Optional<T1> oo1 = o1.flatMap(Optional::ofNullable);
-        Optional<T2> oo2 = o2.flatMap(Optional::ofNullable);
+    public static <T1, T2, R> Optional<R> zipMap(Optional<T1> o1, Optional<T2> o2, BiFunction<T1, T2, R> f) {
+        return o1.flatMap(t1 -> o2.map(t2 -> f.apply(t1, t2)));
+    }
 
-//        f.apply(oo1, oo2);
-        return null;
+    @Test
+    public void zipMapWithoutNullValues() {
+
+        final Optional<String> s1 = Optional.of("1");
+        final Optional<String> s2 = Optional.of("2");
+
+        final Optional<Map<String, String>> expected =
+                Optional.of(Collections.singletonMap(s1.get(), s2.get()));
+
+        final Optional<Map<String, String>> actual =
+                zipMap(s1, s2, Collections::singletonMap);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void zipMapWithNullValues() {
+
+        final Optional<String> s1 = Optional.ofNullable(null);
+        final Optional<String> s2 = Optional.of("2");
+
+        final Optional<Object> expected = Optional.empty();
+
+        final Optional<Map<String, String>> actual =
+                zipMap(s1, s2, Collections::singletonMap);
+
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -95,8 +117,6 @@ public class OptionalExample {
         if (o1.isPresent()) {
             actual = Optional.of(o1.get()).filter(s -> s.length() >= 3);
             assertEquals("abc", actual.get());
-        } else {
-            actual = Optional.empty();
         }
     }
 
@@ -105,16 +125,7 @@ public class OptionalExample {
         final Optional<String> o1 = getOptional();
 
         o1.filter(s -> s.length() >= 4)
-                .ifPresent(System.out::println);
-
-        final Optional<String> actual;
-        if (o1.isPresent()) {
-            actual = Optional.of(o1.get()).filter(s -> s.length() >= 4);
-            assertEquals("abc", actual.get());
-        } else {
-            actual = Optional.empty();
-            actual.get();
-        }
+                .get();
     }
 
     private Optional<String> getOptional() {
