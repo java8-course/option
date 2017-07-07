@@ -2,9 +2,12 @@ package option;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import static org.junit.Assert.assertEquals;
 
@@ -54,5 +57,31 @@ public class OptionalExample {
         return ThreadLocalRandom.current().nextBoolean()
             ? Optional.empty()
             : Optional.of("abc");
+    }
+
+    @Test
+    public void filter(){
+        final Optional<String> o1 = getOptional();
+        final Predicate<String> predicate = s -> s.equals("test");
+        Optional<String> expected = o1.filter(predicate);
+        Optional<String> actual;
+        if(o1.isPresent()){
+            if(predicate.test(o1.get())){
+                actual = o1;
+            }else{
+                actual = o1.empty();
+            }
+        }else{
+            actual = o1.empty();
+        }
+
+        assertEquals(expected,actual);
+
+    }
+
+    @Test
+    public void flatMap(){
+        final Optional<String> o1 = getOptional();
+
     }
 }
