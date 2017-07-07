@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -82,6 +83,11 @@ public class OptionalExample {
     @Test
     public void flatMap(){
         final Optional<String> o1 = getOptional();
+
+    }
+    //TODO method zip (слияние двух коллекций) - zipmap
+    //map and flatmap (не использовать isPresent, get) - соединяем два optional
+    public static <T1,T2,R> Optional<R> zipMap(Optional<T1> o1, Optional<T2> o2, BiFunction<T1,T2,R> f){
 
     }
 }
