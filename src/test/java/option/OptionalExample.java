@@ -1,14 +1,18 @@
 package option;
 
+import org.apache.commons.lang3.ObjectUtils;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import static org.junit.Assert.assertEquals;
 
@@ -56,38 +60,117 @@ public class OptionalExample {
 
     private Optional<String> getOptional() {
         return ThreadLocalRandom.current().nextBoolean()
-            ? Optional.empty()
-            : Optional.of("abc");
+                ? Optional.empty()
+                : Optional.of("abc");
     }
 
     @Test
-    public void filter(){
+    public void filter() {
         final Optional<String> o1 = getOptional();
         final Predicate<String> predicate = s -> s.equals("test");
         Optional<String> expected = o1.filter(predicate);
         Optional<String> actual;
-        if(o1.isPresent()){
-            if(predicate.test(o1.get())){
+        if (o1.isPresent()) {
+            if (predicate.test(o1.get())) {
                 actual = o1;
-            }else{
+            } else {
                 actual = o1.empty();
             }
-        }else{
+        } else {
             actual = o1.empty();
+        }
+
+        assertEquals(expected, actual);
+
+    }
+
+    @Test
+    public void flatMap() {
+        final Optional<String> o1 = getOptional();
+
+        final Function<String, Optional<String>> function = s -> Optional.of("test");
+        Optional<String> expected = o1.flatMap(function);
+        Optional<String> actual;
+        if (o1.isPresent()) {
+            actual = function.apply(o1.get());
+        } else {
+            actual = Optional.empty();
+        }
+
+        assertEquals(expected, actual);
+
+    }
+
+    @Test
+    public void orElse() {
+        final Optional<String> o1 = getOptional();
+        String expected = o1.orElse("other");
+        String actual;
+        if (o1.isPresent()) {
+            actual = o1.get();
+        } else {
+            actual = "other";
+        }
+
+        assertEquals(expected, actual);
+
+    }
+
+    @Test
+    public void orElseThrow() {
+        final Optional<String> o1 = getOptional();
+        final Supplier<NullPointerException> supplier = NullPointerException::new;
+        String expected = null;
+        String actual = null;
+        Throwable exception = new Throwable();
+
+        try {
+            expected = o1.orElseThrow(supplier);
+        } catch (NullPointerException e) {
+            exception = e;
+        }
+
+        try {
+            if (o1.isPresent()) {
+                actual = o1.get();
+            } else {
+                supplier.get();
+            }
+        } catch (NullPointerException e) {
+            assertEquals(exception.getClass(), e.getClass());
+        }
+
+        assertEquals(expected, actual);
+
+    }
+
+    @Test
+    public void orElseGet() {
+        final Optional<String> o1 = getOptional();
+        final Supplier<String> supplier = () -> "test";
+        final String expected = o1.orElseGet(supplier);
+        String actual;
+
+        if(o1.isPresent()){
+            actual = o1.get();
+        }else{
+            actual = supplier.get();
         }
 
         assertEquals(expected,actual);
 
     }
 
-    @Test
-    public void flatMap(){
-        final Optional<String> o1 = getOptional();
 
+    //TODO method zip
+    public static <T1, T2, R> Optional<R> zipMap(Optional<T1> o1, Optional<T2> o2, BiFunction<T1, T2, R> f) {
+        return o1.flatMap(x -> o2.map(y -> f.apply(x,y)));
     }
-    //TODO method zip (слияние двух коллекций) - zipmap
-    //map and flatmap (не использовать isPresent, get) - соединяем два optional
-    public static <T1,T2,R> Optional<R> zipMap(Optional<T1> o1, Optional<T2> o2, BiFunction<T1,T2,R> f){
 
+    @Test
+    public void testZipMap(){
+        final BiFunction<Integer,Integer,Integer> f = Integer::max;
+        assertEquals(zipMap(Optional.of(0), Optional.of(1), f),  Optional.of(1));
+        assertEquals(zipMap(Optional.empty(), Optional.of(1), f), Optional.empty());
     }
 }
