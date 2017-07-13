@@ -3,10 +3,6 @@ package option;
 import com.sun.istack.internal.Nullable;
 import org.junit.Test;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Parameter;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
@@ -76,10 +72,11 @@ public class OptionalExample {
 
     @Test
     public void flatMap() {
-        class TesterFlatMap{
+        class TesterFlatMap {
             @Nullable
             private String field;
-            Optional<String> getField(){
+
+            Optional<String> getField() {
                 return Optional.ofNullable(field);
             }
 
@@ -92,18 +89,31 @@ public class OptionalExample {
         assertTrue(Optional.of(testerFlatMap)
                 .flatMap(TesterFlatMap::getField)
                 .isPresent());
+        testerFlatMap.setField(null);
+        assertFalse(Optional.of(testerFlatMap)
+                .flatMap(TesterFlatMap::getField)
+                .isPresent());
     }
 
     @Test
-    public void tet(){
-        getOptional().orElseGet(s-> new )
+    public void testOrElseGet() {
+        String actual = (String) Optional.empty().orElseGet(this::getTestValue);
+        String expected = getTestValue();
+        assertThat(actual, is(expected));
     }
 
-    // TODO: 7/7/2017 написать несколько тестов, которые должны быть с get и function
+    public String getTestValue() {
+        return "test";
+    }
+
     private Optional<String> getOptional() {
         return ThreadLocalRandom.current().nextBoolean()
                 ? Optional.empty()
                 : Optional.of("abc");
+    }
+
+    public static <T1, T2, R> Optional<R> zipMap(Optional<T1> o1, Optional<T2> o2, BiFunction<T1, T2, R> f) {
+        return o1.flatMap(obj1 -> o2.map(obj2 -> f.apply(obj1, obj2)));
     }
 
     @Test
@@ -113,20 +123,18 @@ public class OptionalExample {
         assertFalse(optional_1.isPresent());
 
         Optional<String> optional_2 = Optional.of(TEST_VALUE_2);
-        optional_2 = optional_2.filter(s->s.startsWith("T"));
+        optional_2 = optional_2.filter(s -> s.startsWith("T"));
         assertTrue(optional_2.isPresent());
-
-
     }
 
     @Test
-    public void testZipMap(){
-
-    }
-    // TODO: 7/7/2017 написание метода zip для коллекции не использовать get и ifPresent (Можно использовать map и flatMap).
-    // Ну и написать тесты на это днище. И да, без мутабельных переменных.
-
-    public static <T1, T2, R> Optional<R> zipMap(Optional<T1> o1, Optional<T2> o2, BiFunction<T1, T2, R> f) {
-        return o1.flatMap(obj1 -> o2.map(obj2 -> f.apply(obj1, obj2)));
+    public void testZipMap() {
+        BiFunction<String, String, String> function = String::concat;
+        final Optional<String> hello = Optional.of("Hello");
+        final Optional<String> world = Optional.of(" world");
+        assertThat(zipMap(hello, world, function), is(Optional.of("Hello world")));
+        assertThat(zipMap(hello, Optional.empty(), function), is(Optional.empty()));
+        assertThat(zipMap(Optional.empty(), hello, function), is(Optional.empty()));
+        assertThat(zipMap(Optional.empty(), Optional.empty(), function), is(Optional.empty()));
     }
 }
